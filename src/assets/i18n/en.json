@@ -1,7 +1,11 @@
 {
   "PAGES": {
       "HOME": {
-          "TITLE": "App works !"
+          "TITLE": "Home",
+          "TEXT": {
+            "versions": "Component Versions",
+            "versionIs": "version is: "
+          }
       }
   }
 }

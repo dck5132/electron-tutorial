@@ -1,6 +1,8 @@
-import { app, BrowserWindow, screen } from 'electron';
+import { app, BrowserWindow, screen, Menu } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
+import * as colors from 'colors';
+
 
 let win: BrowserWindow = null;
 const args = process.argv.slice(1),
@@ -56,7 +58,33 @@ try {
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
-  app.on('ready', createWindow);
+  app.on('ready', () => {
+    console.log(app.getPath('desktop'));
+    console.log(app.getPath('music'))
+    console.log(app.getPath('temp'))
+    console.log(app.getPath('userData'))
+    console.log(colors.green('Application is Ready'));
+    createWindow();
+    // let menu =  new Menu();
+    // Menu.setApplicationMenu(menu);
+  });
+
+  app.on('browser-window-blur', event => {
+    console.log(colors.white('Application is unfocused'));
+    // setTimeout(() => {
+    //   app.quit()
+    // }, 3000);
+  });
+
+  app.on('browser-window-focus', event => {
+    console.log(colors.white('Application is focused'));
+  });
+
+  app.on('before-quit', event => {
+    console.log(colors.white('Application is quitting'))
+    // event.preventDefault();
+    // console.log(colors.white('Application prevented from quiting'))
+  });
 
   // Quit when all windows are closed.
   app.on('window-all-closed', () => {
