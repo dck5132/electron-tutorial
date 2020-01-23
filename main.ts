@@ -15,14 +15,16 @@ function createWindow(): BrowserWindow {
 
   // Create the browser window.
   win = new BrowserWindow({
+    backgroundColor: '#00293D',
     x: 0,
     y: 0,
     width: size.width,
     height: size.height,
+    show: false,
     webPreferences: {
       nodeIntegration: true,
       allowRunningInsecureContent: (serve) ? true : false,
-    },
+    }
   });
 
   if (serve) {
@@ -38,9 +40,14 @@ function createWindow(): BrowserWindow {
     }));
   }
 
-  if (serve) {
-    win.webContents.openDevTools();
-  }
+  win.once('ready-to-show', win.show);
+
+  win.once('show', () => {
+    if (serve) {
+      win.webContents.openDevTools();
+      console.log(colors.blue('Dev Tools Opened'));
+    }
+  });
 
   // Emitted when the window is closed.
   win.on('closed', () => {
