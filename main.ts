@@ -1,63 +1,77 @@
-import { app, BrowserWindow, screen, Menu } from 'electron';
+import { app, BrowserWindow, screen, ipcMain } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import * as colors from 'colors';
 
 
 let win: BrowserWindow = null;
+let googleWin: BrowserWindow = null;
 const args = process.argv.slice(1),
     serve = args.some(val => val === '--serve');
 
-function createWindow(): BrowserWindow {
+function createWindow(window: BrowserWindow, primary : boolean): BrowserWindow {
 
   const electronScreen = screen;
   const size = electronScreen.getPrimaryDisplay().workAreaSize;
-
   // Create the browser window.
-  win = new BrowserWindow({
-    backgroundColor: '#00293D',
-    x: 0,
-    y: 0,
-    width: size.width,
-    height: size.height,
-    show: false,
-    webPreferences: {
-      nodeIntegration: true,
-      allowRunningInsecureContent: (serve) ? true : false,
-    }
-  });
-
-  if (serve) {
-    require('electron-reload')(__dirname, {
-      electron: require(`${__dirname}/node_modules/electron`)
+  if (primary) {
+    window = new BrowserWindow({
+      backgroundColor: '#00293D',
+      x: 0,
+      y: 0,
+      width: size.width,
+      height: size.height,
+      show: false,
+      webPreferences: {
+        nodeIntegration: true,
+        allowRunningInsecureContent: (serve) ? true : false,
+      }
     });
-    win.loadURL('http://localhost:4200');
-  } else {
-    win.loadURL(url.format({
-      pathname: path.join(__dirname, 'dist/index.html'),
-      protocol: 'file:',
-      slashes: true
-    }));
+
+    if (serve) {
+      require('electron-reload')(__dirname, {
+        electron: require(`${__dirname}/node_modules/electron`)
+      });
+      window.loadURL('http://localhost:4200');
+    } else {
+      window.loadURL(url.format({
+        pathname: path.join(__dirname, 'dist/index.html'),
+        protocol: 'file:',
+        slashes: true
+      }));
+    }
+
+    window.once('ready-to-show', window.show);
+
+    // googleWin.once('ready-to-show', googleWin.show);
+    window.once('show', () => {
+      if (serve) {
+        window.webContents.openDevTools();
+        console.log(colors.blue('Dev Tools Opened'));
+      }
+    });
+  }
+  else {
+    window = new BrowserWindow({
+      backgroundColor: '#00293D',
+      width: 800,
+      height: 800
+    })
+
+    window.loadURL('https://google.com')
+
   }
 
-  win.once('ready-to-show', win.show);
-
-  win.once('show', () => {
-    if (serve) {
-      win.webContents.openDevTools();
-      console.log(colors.blue('Dev Tools Opened'));
-    }
-  });
-
   // Emitted when the window is closed.
-  win.on('closed', () => {
+  window.on('closed', () => {
     // Dereference the window object, usually you would store window
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
-    win = null;
+    console.log('Window is closing');
+    window = null;
   });
 
-  return win;
+  return window;
 }
 
 try {
@@ -71,9 +85,15 @@ try {
     console.log(app.getPath('temp'))
     console.log(app.getPath('userData'))
     console.log(colors.green('Application is Ready'));
-    createWindow();
+    createWindow(win, true);
+      
     // let menu =  new Menu();
-    // Menu.setApplicationMenu(menu);
+    // Menu.setApplicationMenu(menu); 
+
+    ipcMain.on('google', () => {
+      console.log('Google is ready');
+      createWindow(googleWin, false);  
+    });
   });
 
   app.on('browser-window-blur', event => {
@@ -106,7 +126,7 @@ try {
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (win === null) {
-      createWindow();
+      createWindow(win, true);
     }
   });
 

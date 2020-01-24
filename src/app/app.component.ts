@@ -21,6 +21,24 @@ export class AppComponent {
       console.log('Mode electron');
       console.log('Electron ipcRenderer', electronService.ipcRenderer);
       console.log('NodeJS childProcess', electronService.childProcess);
+
+      let menu = this.electronService.remote.Menu.buildFromTemplate([{
+        label: 'File',
+        submenu: [{
+          label: 'Open',
+          click: () => {
+            this.electronService.remote.dialog.showOpenDialog({ properties: ['openFile', 'multiSelections'] });
+          }
+        },
+        {
+          label: 'Open Google',
+          click: () => {
+            this.electronService.ipcRenderer.send('google');
+          }
+        }
+      ]
+      }])
+      this.electronService.remote.Menu.setApplicationMenu(menu);
     } else {
       console.log('Mode web');
     }
