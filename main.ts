@@ -44,14 +44,22 @@ else {
       backgroundColor: '#00293D',
       width: 800,
       height: 800,
-      webPreferences: webPreferences
+      webPreferences: webPreferences,
+      parent: BrowserWindow.getAllWindows()[0],
+      modal: true
     })
 
     window.once('focus', () => {
       window.webContents.openDevTools()
+      // window.setParentWindow(win);
     });
 
   }
+
+  console.log('parent window');
+  console.log(win);
+  console.log('current window');
+  console.log(window.getParentWindow);
 
   if (serve) {
     require('electron-reload')(__dirname, {
@@ -84,7 +92,8 @@ else {
     console.log('Window is closing');
     window = null;
   });
-
+  console.log('this returns: ');
+  console.log(window);
   return window;
 }
 
@@ -100,6 +109,9 @@ try {
     console.log(app.getPath('userData'))
     console.log(colors.green('Application is Ready'));
     createWindow(win, true);
+
+    console.log('apples')
+    console.log(BrowserWindow.getAllWindows());
       
     // let menu =  new Menu();
     // Menu.setApplicationMenu(menu); 
@@ -114,7 +126,6 @@ try {
       console.log('Creating child component window')
       // console.log(event);
       createWindow(childWin, false, 'http://localhost:4200#/child')
-      event.reply('child');
     });
 
   app.on('browser-window-blur', event => {
