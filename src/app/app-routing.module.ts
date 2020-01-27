@@ -11,8 +11,7 @@ const routes: Routes = [
   },
   {
     path: 'child',
-    component: ChildWindowComponent,
-    pathMatch: 'full'
+    component: ChildWindowComponent
   },
   {
     path: '**',

@@ -6,10 +6,23 @@ import * as colors from 'colors';
 
 let win: BrowserWindow = null;
 let googleWin: BrowserWindow = null;
+let childWin: BrowserWindow = null;
+
 const args = process.argv.slice(1),
     serve = args.some(val => val === '--serve');
 
-function createWindow(window: BrowserWindow, primary : boolean): BrowserWindow {
+function createWindow(window: BrowserWindow, primary: boolean, uri: string = 'http://localhost:4200'): BrowserWindow {
+
+let webPreferences = null;
+if (uri.indexOf('http://localhost:4200') !== -1) {
+  webPreferences = {
+    nodeIntegration: true,
+    allowRunningInsecureContent: (serve) ? true : false,
+  }
+}
+else {
+  webPreferences = null;
+}
 
   const electronScreen = screen;
   const size = electronScreen.getPrimaryDisplay().workAreaSize;
@@ -17,50 +30,51 @@ function createWindow(window: BrowserWindow, primary : boolean): BrowserWindow {
   if (primary) {
     window = new BrowserWindow({
       backgroundColor: '#00293D',
-      x: 0,
-      y: 0,
+      // x: 0,
+      // y: 0,
       width: size.width,
       height: size.height,
       show: false,
-      webPreferences: {
-        nodeIntegration: true,
-        allowRunningInsecureContent: (serve) ? true : false,
-      }
+      webPreferences: webPreferences
     });
 
-    if (serve) {
-      require('electron-reload')(__dirname, {
-        electron: require(`${__dirname}/node_modules/electron`)
-      });
-      window.loadURL('http://localhost:4200');
-    } else {
-      window.loadURL(url.format({
-        pathname: path.join(__dirname, 'dist/index.html'),
-        protocol: 'file:',
-        slashes: true
-      }));
-    }
-
-    window.once('ready-to-show', window.show);
-
-    // googleWin.once('ready-to-show', googleWin.show);
-    window.once('show', () => {
-      if (serve) {
-        window.webContents.openDevTools();
-        console.log(colors.blue('Dev Tools Opened'));
-      }
-    });
   }
   else {
     window = new BrowserWindow({
       backgroundColor: '#00293D',
       width: 800,
-      height: 800
+      height: 800,
+      webPreferences: webPreferences
     })
 
-    window.loadURL('https://google.com')
+    window.once('focus', () => {
+      window.webContents.openDevTools()
+    });
 
   }
+
+  if (serve) {
+    require('electron-reload')(__dirname, {
+      electron: require(`${__dirname}/node_modules/electron`)
+    });
+    window.loadURL(uri);
+    console.log(uri);
+  } else {
+    window.loadURL(url.format({
+      pathname: path.join(__dirname, 'dist/index.html'),
+      protocol: 'file:',
+      slashes: true
+    }));
+  }
+
+  window.once('ready-to-show', window.show);
+
+  window.once('show', () => {
+    if (serve) {
+      window.webContents.openDevTools();
+      console.log(colors.blue('Dev Tools Opened'));
+    }
+  });
 
   // Emitted when the window is closed.
   window.on('closed', () => {
@@ -92,9 +106,16 @@ try {
 
     ipcMain.on('google', () => {
       console.log('Google is ready');
-      createWindow(googleWin, false);  
+      createWindow(googleWin, false, 'https://google.com');  
     });
   });
+
+    ipcMain.on('child', (event, arg) => {
+      console.log('Creating child component window')
+      // console.log(event);
+      createWindow(childWin, false, 'http://localhost:4200#/child')
+      event.reply('child');
+    });
 
   app.on('browser-window-blur', event => {
     console.log(colors.white('Application is unfocused'));
