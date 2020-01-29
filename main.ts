@@ -46,9 +46,13 @@ else {
       backgroundColor: '#00293D',
       width: 800,
       height: 800,
+      minWidth: 300,
+      minHeight: 300,
       webPreferences: webPreferences,
       parent: BrowserWindow.getAllWindows()[0],
-      modal: true
+      modal: true,
+      // titleBarStyle: 'hidden',
+      frame: false
     })
 
     window.once('focus', () => {
