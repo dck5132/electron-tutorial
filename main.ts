@@ -27,6 +27,8 @@ else {
   const electronScreen = screen;
   const size = electronScreen.getPrimaryDisplay().workAreaSize;
   // Create the browser window.
+  console.log('before creation');
+  console.log(window);
   if (primary) {
     window = new BrowserWindow({
       backgroundColor: '#00293D',
@@ -51,7 +53,6 @@ else {
 
     window.once('focus', () => {
       window.webContents.openDevTools()
-      // window.setParentWindow(win);
     });
 
   }
@@ -83,6 +84,11 @@ else {
       console.log(colors.blue('Dev Tools Opened'));
     }
   });
+
+  window.on('close', (e) => {
+    e.preventDefault();
+    window.hide();
+  })
 
   // Emitted when the window is closed.
   window.on('closed', () => {
