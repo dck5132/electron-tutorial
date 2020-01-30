@@ -44,8 +44,6 @@ function createWindow(primary: boolean, uri: string = 'http://localhost:4200'): 
       show: false,
       webPreferences: webPreferences
     });
-
-    win = window;
   }
   else {
     window = new BrowserWindow({
@@ -72,7 +70,8 @@ function createWindow(primary: boolean, uri: string = 'http://localhost:4200'): 
       electron: require(`${__dirname}/node_modules/electron`)
     });
     window.loadURL(uri);
-    console.log(uri.green);
+    console.log('uri:'.green);
+    console.log(uri);
   } else {
     window.loadURL(url.format({
       pathname: path.join(__dirname, 'dist/index.html'),
