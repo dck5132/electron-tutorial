@@ -63,6 +63,12 @@ function createWindow(primary: boolean, uri: string = 'http://localhost:4200'): 
       window.webContents.openDevTools()
     });
 
+    window.on('close', (e) => {
+      e.preventDefault();
+      console.log('Prevented App from closing and hid it'.blue);
+      window.hide();
+    })
+
   }
 
   if (serve) {
@@ -91,12 +97,6 @@ function createWindow(primary: boolean, uri: string = 'http://localhost:4200'): 
       console.log('Dev Tools Opened'.blue);
     }
   });
-
-  window.on('close', (e) => {
-    e.preventDefault();
-    console.log('Prevented App from closing and hid it'.blue);
-    window.hide();
-  })
 
   // Emitted when the window is closed.
   window.on('closed', () => {

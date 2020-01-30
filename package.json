@@ -97,7 +97,6 @@
     "@types/electron-window-state": "2.0.33",
     "bcryptjs": "2.4.3",
     "bootstrap": "4.4.1",
-    "colors": "1.4.0",
-    "electron-window-state": "5.0.3"
+    "colors": "1.4.0"
   }
 }
