@@ -3,6 +3,11 @@ import * as path from 'path';
 import * as url from 'url';
 import * as colors from 'colors';
 
+// Blue is an action 
+// Green is an identifying string
+// Red is an important log
+// Yellow is an event
+// White or no color is variables and actual values
 
 let win: BrowserWindow = null;
 let googleWin: BrowserWindow = null;
@@ -11,48 +16,49 @@ let childWin: BrowserWindow = null;
 const args = process.argv.slice(1),
     serve = args.some(val => val === '--serve');
 
-function createWindow(window: BrowserWindow, primary: boolean, uri: string = 'http://localhost:4200'): BrowserWindow {
+function createWindow(primary: boolean, uri: string = 'http://localhost:4200'): BrowserWindow {
+  let window:BrowserWindow = null;
+  let webPreferences = null;
 
-let webPreferences = null;
-if (uri.indexOf('http://localhost:4200') !== -1) {
-  webPreferences = {
-    nodeIntegration: true,
-    allowRunningInsecureContent: (serve) ? true : false,
+  if (uri.indexOf('http://localhost:4200') !== -1) {
+    webPreferences = {
+      nodeIntegration: true,
+      allowRunningInsecureContent: (serve) ? true : false,
+    }
   }
-}
-else {
-  webPreferences = null;
-}
+  else {
+    webPreferences = null;
+  }
 
   const electronScreen = screen;
   const size = electronScreen.getPrimaryDisplay().workAreaSize;
+
   // Create the browser window.
-  console.log('before creation');
+  console.log('before creation'.green);
   console.log(window);
   if (primary) {
     window = new BrowserWindow({
       backgroundColor: '#00293D',
-      // x: 0,
-      // y: 0,
       width: size.width,
       height: size.height,
       show: false,
       webPreferences: webPreferences
     });
 
+    win = window;
   }
   else {
     window = new BrowserWindow({
       backgroundColor: '#00293D',
-      width: 800,
-      height: 800,
+      width: size.width - 500,
+      height: size.height - 500,
       minWidth: 300,
       minHeight: 300,
       webPreferences: webPreferences,
       parent: BrowserWindow.getAllWindows()[0],
-      modal: true,
+      // modal: true,
       // titleBarStyle: 'hidden',
-      frame: false
+      // frame: false
     })
 
     window.once('focus', () => {
@@ -61,17 +67,12 @@ else {
 
   }
 
-  console.log('parent window');
-  console.log(win);
-  console.log('current window');
-  console.log(window.getParentWindow);
-
   if (serve) {
     require('electron-reload')(__dirname, {
       electron: require(`${__dirname}/node_modules/electron`)
     });
     window.loadURL(uri);
-    console.log(uri);
+    console.log(uri.green);
   } else {
     window.loadURL(url.format({
       pathname: path.join(__dirname, 'dist/index.html'),
@@ -80,17 +81,21 @@ else {
     }));
   }
 
-  window.once('ready-to-show', window.show);
+  window.once('ready-to-show', () => {
+    window.show();
+  });
 
-  window.once('show', () => {
+  window.on('show', () => {
+    console.log('show window'.blue)
     if (serve) {
       window.webContents.openDevTools();
-      console.log(colors.blue('Dev Tools Opened'));
+      console.log('Dev Tools Opened'.blue);
     }
   });
 
   window.on('close', (e) => {
     e.preventDefault();
+    console.log('Prevented App from closing and hid it'.blue);
     window.hide();
   })
 
@@ -99,10 +104,10 @@ else {
     // Dereference the window object, usually you would store window
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
-    console.log('Window is closing');
+    console.log('Window is closing'.blue);
     window = null;
   });
-  console.log('this returns: ');
+  console.log('Window is: '.green);
   console.log(window);
   return window;
 }
@@ -113,44 +118,52 @@ try {
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
   app.on('ready', () => {
-    console.log(app.getPath('desktop'));
-    console.log(app.getPath('music'))
-    console.log(app.getPath('temp'))
-    console.log(app.getPath('userData'))
-    console.log(colors.green('Application is Ready'));
-    createWindow(win, true);
-
-    console.log('apples')
-    console.log(BrowserWindow.getAllWindows());
-      
+    console.log(app.getPath('desktop').green);
+    console.log(app.getPath('music').green)
+    console.log(app.getPath('temp').green)
+    console.log(app.getPath('userData').green)
+    console.log('Creating Main Window'.blue);
+    win = createWindow(true);
+    console.log(win);
     // let menu =  new Menu();
     // Menu.setApplicationMenu(menu); 
 
     ipcMain.on('google', () => {
-      console.log('Google is ready');
-      createWindow(googleWin, false, 'https://google.com');  
+      console.log('Creating Google Window'.blue);
+      console.log(googleWin);
+      if (googleWin === null) {
+        googleWin = createWindow(false, 'https://google.com');  
+      }
+      else {
+        googleWin.show();
+      }
+    });
+
+    ipcMain.on('child', () => {
+      console.log('Creating child component window'.blue)
+      console.log(childWin);
+      if (childWin === null) {
+        childWin = createWindow(false, 'http://localhost:4200#/child')
+      }
+      else {
+        childWin.show();
+      }
     });
   });
 
-    ipcMain.on('child', (event, arg) => {
-      console.log('Creating child component window')
-      // console.log(event);
-      createWindow(childWin, false, 'http://localhost:4200#/child')
-    });
-
   app.on('browser-window-blur', event => {
-    console.log(colors.white('Application is unfocused'));
+    console.log(colors.yellow('Application is unfocused'));
     // setTimeout(() => {
     //   app.quit()
     // }, 3000);
   });
 
   app.on('browser-window-focus', event => {
-    console.log(colors.white('Application is focused'));
+    console.log(colors.yellow('Application is focused'));
   });
 
   app.on('before-quit', event => {
-    console.log(colors.white('Application is quitting'))
+    console.log(colors.yellow('Application is quitting'))
     // event.preventDefault();
     // console.log(colors.white('Application prevented from quiting'))
   });
@@ -168,7 +181,7 @@ try {
     // On OS X it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (win === null) {
-      createWindow(win, true);
+      win = createWindow( true);
     }
   });
 

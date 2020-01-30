@@ -32,7 +32,7 @@
     "ng:serve": "ng serve",
     "ng:serve:web": "ng serve -c web -o",
     "electron:serve-tsc": "tsc -p tsconfig-serve.json",
-    "electron:serve": "wait-on http-get://localhost:4200/ && npm run electron:serve-tsc && electron . --serve",
+    "electron:serve": "wait-on http-get://localhost:4200/ && npm run electron:serve-tsc && nodemon --watch ./main.ts --exec \"npm run electron:serve-tsc && electron . --serve",
     "electron:local": "npm run build:prod && electron .",
     "electron:linux": "npm run build:prod && electron-builder build --linux",
     "electron:windows": "npm run build:prod && electron-builder build --windows",
@@ -94,8 +94,10 @@
     "node": ">=10.9.0"
   },
   "dependencies": {
+    "@types/electron-window-state": "2.0.33",
     "bcryptjs": "2.4.3",
     "bootstrap": "4.4.1",
-    "colors": "1.4.0"
+    "colors": "1.4.0",
+    "electron-window-state": "5.0.3"
   }
 }
