@@ -12,6 +12,7 @@ import * as colors from 'colors';
 let win: BrowserWindow = null;
 let googleWin: BrowserWindow = null;
 let childWin: BrowserWindow = null;
+let authWin: BrowserWindow = null;
 
 const args = process.argv.slice(1),
     serve = args.some(val => val === '--serve');
@@ -107,6 +108,16 @@ function createWindow(primary: boolean, uri: string = 'http://localhost:4200'): 
     console.log(`${input.key} :  ${input.type}`);
   });
 
+  wc.on('did-navigate', (e, url, statusCode, message) => {
+    console.log(`Navigated to ${url} with response code ${statusCode}`.blue);
+    console.log(message);
+  })
+
+  wc.on('login', (e, request, authinfo, callback) => {
+    console.log('Logging in'.blue);
+    callback('user', 'passwd')
+  })
+
   console.log('Web Contents: '.green);
   console.log(webContents.getAllWebContents());
 
@@ -170,6 +181,17 @@ try {
       }
       else {
         childWin.show();
+      }
+    });
+
+    ipcMain.on('auth', () => {
+      console.log('Creating auth Window'.blue);
+      console.log(authWin);
+      if (authWin === null) {
+        authWin = createWindow(false, 'https://httpbin.org/basic-auth/user/passwd')
+      }
+      else {
+        authWin.show();
       }
     });
   });

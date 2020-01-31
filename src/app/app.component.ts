@@ -38,8 +38,13 @@ export class AppComponent implements OnInit {
           click: () => {
             this.electronService.ipcRenderer.send('google');
           }
-        }
-        ,
+        },
+        {
+          label: 'Open Auth Bin',
+          click: () => {
+            this.electronService.ipcRenderer.send('auth');
+          }
+        },
         {
           label: 'Open Child',
           click: () => {
