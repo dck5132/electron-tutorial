@@ -1,4 +1,4 @@
-import { app, BrowserWindow, screen, ipcMain } from 'electron';
+import { app, BrowserWindow, screen, ipcMain, WebContents, webContents } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import * as colors from 'colors';
@@ -19,6 +19,7 @@ const args = process.argv.slice(1),
 function createWindow(primary: boolean, uri: string = 'http://localhost:4200'): BrowserWindow {
   let window:BrowserWindow = null;
   let webPreferences = null;
+
 
   if (uri.indexOf('http://localhost:4200') !== -1) {
     webPreferences = {
@@ -85,6 +86,29 @@ function createWindow(primary: boolean, uri: string = 'http://localhost:4200'): 
       slashes: true
     }));
   }
+
+  let wc: WebContents = window.webContents
+
+  wc.on('new-window', (e, url) => {
+    console.log('New window loaded from: '.green);
+    console.log(url)
+    e.preventDefault();
+    console.log('Prevented window from opening'.blue);
+  });
+  wc.on('dom-ready', () => {
+    console.log('Dom Finished Loading'.green);
+  });
+
+  wc.on('did-finish-load', () => {
+    console.log('Web Content Finished Loading'.green);
+  });
+
+  wc.on('before-input-event', (e, input) => {
+    console.log(`${input.key} :  ${input.type}`);
+  });
+
+  console.log('Web Contents: '.green);
+  console.log(webContents.getAllWebContents());
 
   window.once('ready-to-show', () => {
     window.show();
