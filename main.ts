@@ -46,6 +46,25 @@ function createWindow(primary: boolean, uri: string = 'http://localhost:4200'): 
       show: false,
       webPreferences: webPreferences
     });
+
+    window.once('ready-to-show', () => {
+      window.show();
+      // This handles setting the main window on top of any other windows (Other applications even in full screen)
+      window.setAlwaysOnTop(true);
+      setTimeout(() => {
+        window.setAlwaysOnTop(false);
+      }, 100
+      )
+    });
+  
+    window.on('show', () => {
+      console.log('show window'.blue)
+      if (serve) {
+        window.webContents.openDevTools();
+        console.log('Dev Tools Opened'.blue);
+      }
+    });
+
   }
   else {
     window = new BrowserWindow({
@@ -93,8 +112,8 @@ function createWindow(primary: boolean, uri: string = 'http://localhost:4200'): 
   wc.on('new-window', (e, url) => {
     console.log('New window loaded from: '.green);
     console.log(url)
-    e.preventDefault();
-    console.log('Prevented window from opening'.blue);
+    // e.preventDefault();
+    // console.log('Prevented window from opening'.blue);
   });
   wc.on('dom-ready', () => {
     console.log('Dom Finished Loading'.green);
@@ -118,20 +137,22 @@ function createWindow(primary: boolean, uri: string = 'http://localhost:4200'): 
     callback('user', 'passwd')
   })
 
+  wc.on('media-started-playing', () => {
+    console.log('video Started playing'.blue)
+  })
+
+  wc.on('media-paused', () => {
+    console.log('video paused'.blue)
+  })
+
+  wc.on('context-menu', (e, params) => {
+    console.log(`Context Menu opened on ${params.mediaType} at x: ${params.x} and y: ${params.y}`.blue);
+    console.log(`Selection can be copied ${params.editFlags.canCopy}`)
+  })
+
+
   console.log('Web Contents: '.green);
   console.log(webContents.getAllWebContents());
-
-  window.once('ready-to-show', () => {
-    window.show();
-  });
-
-  window.on('show', () => {
-    console.log('show window'.blue)
-    if (serve) {
-      window.webContents.openDevTools();
-      console.log('Dev Tools Opened'.blue);
-    }
-  });
 
   // Emitted when the window is closed.
   window.on('closed', () => {

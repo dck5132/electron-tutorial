@@ -1,17 +1,12 @@
-<div class="primary-web-page">
-  <nav class="nav">
-    <a class="nav-item" target="_blank" href="https://placekitten.com/500/500"><h3>Kitten</h3></a>
-  </nav>
-  <div class="container">
-    <h1 class="title">
-      {{ 'PAGES.HOME.TITLE' | translate }}
-    </h1>
-  </div>
+<div class="container">
+  <h1 class="title">
+    {{ 'PAGES.HOME.TITLE' | translate }}
+  </h1>
+</div>
 
-  <div class="version">
-    <h2>{{'PAGES.HOME.TEXT.versions' | translate}}</h2>
-    <ul>
-      <li *ngFor="let version of versions; let i = index"><span>{{version.versionName}} <span>{{'PAGES.HOME.TEXT.versionIs' | translate}}</span> {{version.versionNumber}} </span></li>
-    </ul>
-  </div>
+<div class="version">
+  <h2>{{'PAGES.HOME.TEXT.versions' | translate}}</h2>
+  <ul>
+    <li *ngFor="let version of versions; let i = index"><span>{{version.versionName}} <span>{{'PAGES.HOME.TEXT.versionIs' | translate}}</span> {{version.versionNumber}} </span></li>
+  </ul>
 </div>
