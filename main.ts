@@ -1,4 +1,4 @@
-import { app, BrowserWindow, screen, ipcMain, WebContents, webContents } from 'electron';
+import { app, BrowserWindow, screen, ipcMain, WebContents, webContents, session } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import * as colors from 'colors';
@@ -21,11 +21,20 @@ function createWindow(primary: boolean, uri: string = 'http://localhost:4200'): 
   let window:BrowserWindow = null;
   let webPreferences = null;
 
-
+  let customSession = session.fromPartition('persist:part1');
+  // let customerPartition = session.fromPartition('persist:part1')
   if (uri.indexOf('http://localhost:4200') !== -1) {
+    let webSession = null;
+    if (primary) {
+      webSession = session.defaultSession
+    }
+    else {
+      webSession = customSession
+    }
     webPreferences = {
       nodeIntegration: true,
       allowRunningInsecureContent: (serve) ? true : false,
+      session: webSession
     }
   }
   else {
@@ -91,6 +100,8 @@ function createWindow(primary: boolean, uri: string = 'http://localhost:4200'): 
     })
 
   }
+
+
 
   if (serve) {
     require('electron-reload')(__dirname, {
@@ -180,6 +191,20 @@ try {
     console.log('Creating Main Window'.blue);
     win = createWindow(true);
     console.log(win);
+    console.log('Main window web contents'.green)
+    console.log(win.webContents)
+    console.log('Main window session'.green)
+    console.log(win.webContents.session);
+    console.log('Session from session module'.green)
+    console.log(session.defaultSession);
+    console.log('Session object default session is equal to home session: ')
+    console.log(Object.is(win.webContents.session, session.defaultSession))
+    console.log('Session Partition 1'.green);
+    console.log(session.fromPartition('part1'));
+    console.log('Session compare partition to default');
+    console.log(Object.is(session.fromPartition('part1'), session.defaultSession))
+    console.log('Clearing default local storage'.blue);
+    win.webContents.session.clearStorageData();
     // let menu =  new Menu();
     // Menu.setApplicationMenu(menu); 
 
@@ -197,12 +222,16 @@ try {
     ipcMain.on('child', () => {
       console.log('Creating child component window'.blue)
       console.log(childWin);
+
       if (childWin === null) {
         childWin = createWindow(false, 'http://localhost:4200#/child')
       }
       else {
         childWin.show();
       }
+
+      console.log('Compare main session and child session'.green);
+      console.log(Object.is(win.webContents.session, childWin.webContents.session))
     });
 
     ipcMain.on('auth', () => {
