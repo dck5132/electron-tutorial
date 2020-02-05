@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+
 import { PageNotFoundComponent } from './shared/components';
 import { ChildWindowComponent } from './child-window/child-window.component';
+import { TextEditorComponent } from './text-editor/text-editor.component';
 
 const routes: Routes = [
   {
@@ -12,6 +14,10 @@ const routes: Routes = [
   {
     path: 'child',
     component: ChildWindowComponent
+  },
+  {
+    path: 'editor',
+    component: TextEditorComponent
   },
   {
     path: '**',

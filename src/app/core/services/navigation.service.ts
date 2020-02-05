@@ -16,14 +16,9 @@ export class NavigationService {
    }
 
    navigate(path: string) {
-    this.electronService.ipcRenderer.on(path, (event, arg) => {
-      console.log(this.router);
-      this.ngZone.run(() => {
-        console.log(event);
-        console.log(arg);
-        console.log(this.router);
-        this.router.navigate(['/' + path]);
-      })
-    });
+    console.log(path);
+    console.log('/' + path);  
+    this.router.navigate(['/' + path]);
    }
 }
+

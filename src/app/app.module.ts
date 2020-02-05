@@ -18,6 +18,7 @@ import { HomeModule } from './home/home.module';
 
 import { AppComponent } from './app.component';
 import { ChildWindowComponent } from './child-window/child-window.component';
+import { TextEditorComponent } from './text-editor/text-editor.component';
 
 // AoT requires an exported function for factories
 export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
@@ -25,7 +26,7 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
 }
 
 @NgModule({
-  declarations: [AppComponent, ChildWindowComponent],
+  declarations: [AppComponent, ChildWindowComponent, TextEditorComponent],
   imports: [
     BrowserModule,
     FormsModule,

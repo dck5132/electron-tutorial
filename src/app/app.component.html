@@ -1,8 +1,14 @@
 <div class="primary-web-page">
     <nav class="nav">
+        <a class="nav-item clickable" (click)="navigationService.navigate('')"><h3>Home</h3></a>
         <a class="nav-item" target="_blank" href="https://placekitten.com/500/500"><h3>Kitten</h3></a>
         <a class="nav-item" target="_blank" href="../assets/mgm.mp4"><h3>Video</h3></a> 
         <a class="nav-item clickable" (click)="electronService.ipcRenderer.send('child')"><h3>Angular Child</h3></a>
+        <a class="nav-item clickable" (click)="navigationService.navigate('editor')"><h3>Angular Editor</h3></a>
     </nav>
-    <router-outlet></router-outlet>
+    <div class="container">
+        <router-outlet></router-outlet>
+    </div>
+    
+    
 </div>

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { ElectronService } from './core/services';
 import { TranslateService } from '@ngx-translate/core';
 import { AppConfig } from '../environments/environment';
+import { NavigationService } from './core/services/navigation.service';
 
 @Component({
   selector: 'app-root',
@@ -14,6 +15,7 @@ export class AppComponent implements OnInit {
   constructor(
     public electronService: ElectronService,
     private translate: TranslateService,
+    private navigationService: NavigationService,
     private router: Router
   ) {
     translate.setDefaultLang('en');

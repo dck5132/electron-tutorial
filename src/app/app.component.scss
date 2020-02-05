@@ -1,22 +1,39 @@
 .nav {
-    position: fixed;
-    top: 0%;
-    left: 0%;
-    width: 10%;
-    height: 100%;
-    background-color: black;
-    border: 1px solid red;
-  }
-  
-  .nav-item {
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    h3 {
-        border-bottom: 1px solid cyan;
-    }
-  }
+  position: fixed;
+  top: 0%;
+  left: 0%;
+  width: 10%;
+  height: 100%;
+  background-color: black;
+  border: 1px solid red;
+}
 
-  .clickable { 
-    cursor: pointer;
+.nav-item {
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  h3 {
+      border-bottom: 1px solid cyan;
   }
+}
+
+.container {
+  height: 80%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .title {
+    padding: 50px 20px;
+  }
+}
+
+
+.clickable { 
+  cursor: pointer;
+}
+
+.main-body {
+  padding-left: 15%;
+}
