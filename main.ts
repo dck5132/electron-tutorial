@@ -22,11 +22,12 @@ function createWindow(primary: boolean, uri: string = 'http://localhost:4200'): 
   let webPreferences = null;
 
   let customSession = session.fromPartition('persist:part1');
-  // let customerPartition = session.fromPartition('persist:part1')
   if (uri.indexOf('http://localhost:4200') !== -1) {
     let webSession = null;
     if (primary) {
       webSession = session.defaultSession
+
+      console.log(session.defaultSession.cookies.get({}));
     }
     else {
       webSession = customSession
