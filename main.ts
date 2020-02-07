@@ -1,4 +1,4 @@
-import { app, BrowserWindow, screen, ipcMain, WebContents, webContents, session } from 'electron';
+import { app, BrowserWindow, screen, ipcMain, WebContents, webContents, session, Session, CookiesSetDetails, Cookie } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import * as colors from 'colors';
@@ -17,6 +17,13 @@ let authWin: BrowserWindow = null;
 const args = process.argv.slice(1),
     serve = args.some(val => val === '--serve');
 
+async function getCookies(session: Session) {
+  let cookies = await session.cookies.get({});
+  console.log('Cookies Returned: '.green);
+  console.log(cookies);
+  return cookies;
+}
+
 function createWindow(primary: boolean, uri: string = 'http://localhost:4200'): BrowserWindow {
   let window:BrowserWindow = null;
   let webPreferences = null;
@@ -26,8 +33,6 @@ function createWindow(primary: boolean, uri: string = 'http://localhost:4200'): 
     let webSession = null;
     if (primary) {
       webSession = session.defaultSession
-
-      console.log(session.defaultSession.cookies.get({}));
     }
     else {
       webSession = customSession
@@ -45,10 +50,21 @@ function createWindow(primary: boolean, uri: string = 'http://localhost:4200'): 
   const electronScreen = screen;
   const size = electronScreen.getPrimaryDisplay().workAreaSize;
 
+  // Set cookies is failing due to issues with the electron api
+  /*   const cookie = { url: 'localhost:4200', name: 'dummy_name', value: 'dummy', expirationDate: 0}
+    console.log(cookie);
+    session.defaultSession.cookies.set(cookie)
+      .then(() => {
+        console.log(cookie)
+      }, (error) => {
+        console.error(error)
+      }) */
+
   // Create the browser window.
   console.log('before creation'.green);
   console.log(window);
   if (primary) {
+
     window = new BrowserWindow({
       backgroundColor: '#00293D',
       width: size.width,
@@ -133,6 +149,7 @@ function createWindow(primary: boolean, uri: string = 'http://localhost:4200'): 
 
   wc.on('did-finish-load', () => {
     console.log('Web Content Finished Loading'.green);
+    getCookies(session.defaultSession);
   });
 
   wc.on('before-input-event', (e, input) => {
@@ -206,6 +223,7 @@ try {
     console.log(Object.is(session.fromPartition('part1'), session.defaultSession))
     console.log('Clearing default local storage'.blue);
     win.webContents.session.clearStorageData();
+
     // let menu =  new Menu();
     // Menu.setApplicationMenu(menu); 
 
